@@ -12,7 +12,11 @@ import java.io.IOException;
 
 public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationFilter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+   public CustomAuthenticationFilter(ObjectMapper objectMapper){
+       this.objectMapper = objectMapper;
+   }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
