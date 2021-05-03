@@ -24,6 +24,11 @@ public class PostController {
         return postService.findAllPost(page);
     }
 
+    @GetMapping("/posts/comments")
+    public List<Post> getPostWithComments(@RequestParam(required = false, defaultValue = "0") int page){
+        return postService.findAllPostWithComments(page);
+    }
+
     public List<PostDTO> postToPostDTO(List<Post> postList){
       return  postList.stream()
                 .map(TransformUtil::postToPostDTO).collect(Collectors.toList());

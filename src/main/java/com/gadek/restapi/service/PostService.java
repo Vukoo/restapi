@@ -11,4 +11,6 @@ public interface PostService {
     void removeById(Long postId);
 
     List<Post> findAllPost(int page);
+
+    List<Post> findAllPostWithComments(int page);
 }
