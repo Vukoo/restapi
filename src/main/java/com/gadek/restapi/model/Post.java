@@ -1,5 +1,6 @@
 package com.gadek.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,7 +13,9 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @JsonProperty( required = true)
     private String title;
+    @JsonProperty( required = true)
     private String content;
     private LocalDateTime created;
     @OneToMany(cascade = CascadeType.REMOVE)

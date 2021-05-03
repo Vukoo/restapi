@@ -15,11 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//TODO: custom response with error handling
 @RestController
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
+
+    @GetMapping("/")
+    public String index(){
+        return "Secured connection";
+    }
 
     @GetMapping("/posts")
     public List<Post> getPosts(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
@@ -52,6 +58,7 @@ public class PostController {
          return new ResponseEntity<>(HttpStatus.OK);
     }
 
+//    TODO:validate post request
     @PostMapping("/posts")
     public Post addPost(@RequestBody Post post){
         return postService.save(post);
