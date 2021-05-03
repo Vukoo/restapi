@@ -7,6 +7,8 @@ import com.gadek.restapi.util.TransformUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,14 +21,14 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/posts/")
-    public List<Post> getPosts(@RequestParam(required = false, defaultValue = "0") int page){
-        return postService.findAllPost(page);
+    @GetMapping("/posts")
+    public List<Post> getPosts(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
+        return postService.findAllPost(page,sortDirection != null ? sortDirection :Sort.Direction.ASC);
     }
 
     @GetMapping("/posts/comments")
-    public List<Post> getPostWithComments(@RequestParam(required = false, defaultValue = "0") int page){
-        return postService.findAllPostWithComments(page);
+    public List<Post> getPostWithComments(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
+        return postService.findAllPostWithComments(page,sortDirection != null ? sortDirection :Sort.Direction.ASC  );
     }
 
     public List<PostDTO> postToPostDTO(List<Post> postList){
@@ -35,12 +37,23 @@ public class PostController {
     }
 
     @GetMapping("/posts/{id}")
-    public ResponseEntity<Post> getSinglePost(@PathVariable long postId){
-        throw new IllegalArgumentException("Not implemented yet");
+    public Post getSinglePost(@PathVariable long id){
+        return postService.findById(id);
     }
 
-    @DeleteMapping("/posts")
-    public ResponseEntity<Post> removePost(){
-        throw new IllegalArgumentException("Not implemented yet");
+    @PutMapping("/posts")
+    public Post updatePost(@RequestBody Post post){
+        return postService.updatePost(post);
+    }
+
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<String> removePost(@PathVariable long id){
+         postService.removeById(id);
+         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/posts")
+    public Post addPost(@RequestBody Post post){
+        return postService.save(post);
     }
 }

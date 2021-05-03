@@ -7,19 +7,19 @@ import com.gadek.restapi.repository.PostRepository;
 import com.gadek.restapi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Collection;
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService {
+public class PostServiceImpl extends CommonController implements PostService {
 
-    public static final int PAGE_SIZE = 5;
+
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
@@ -39,20 +39,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAllPost(int page) {
-        return postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE));
+    public List<Post> findAllPost(int page, Sort.Direction sortDirection) {
+        return postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection, "id")));
     }
 
     @Override
-    public List<Post> findAllPostWithComments(int page) {
-        final List<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE));
-//        List<Long> postIdList = allPosts.stream()
-//                .map(Post::getId).
-//                collect(Collectors.toList());
+    public List<Post> findAllPostWithComments(int page, Sort.Direction sortDirection) {
+        final List<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection,"id")));
         final List<Comment> commentsList = commentRepository.findAllByPostIdIn(allPosts);
         allPosts.forEach(post -> post.setComment(extractCommentS(post,commentsList)));
-
         return allPosts;
+    }
+
+    @Override
+    public Post updatePost(Post post) {
+        Post postDB = postRepository.findById(post.getId()).orElseThrow();
+        postDB.setContent(post.getContent());
+        postDB.setTitle(post.getTitle());
+        return postDB;
+    }
+
+    @Override
+    @Transactional
+    public Post save(@RequestBody Post post) {
+        return postRepository.save(post);
     }
 
     private List<Comment> extractCommentS(Post post, List<Comment> commentsList) {
