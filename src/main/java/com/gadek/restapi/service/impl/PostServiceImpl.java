@@ -6,6 +6,9 @@ import com.gadek.restapi.repository.CommentRepository;
 import com.gadek.restapi.repository.PostRepository;
 import com.gadek.restapi.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,11 +32,13 @@ public class PostServiceImpl extends CommonController implements PostService {
     }
 
     @Override
+    @Cacheable("SinglePost")
     public Post findById(Long postId) {
         return postRepository.findById(postId).orElseThrow();
     }
 
     @Override
+    @CacheEvict(cacheNames = "SinglePost")
     public void removeById(Long postId) {
         postRepository.deleteById(postId);
     }
@@ -44,6 +49,7 @@ public class PostServiceImpl extends CommonController implements PostService {
     }
 
     @Override
+    @Cacheable("PostWithComments")
     public List<Post> findAllPostWithComments(int page, Sort.Direction sortDirection) {
         final List<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection,"id")));
         final List<Comment> commentsList = commentRepository.findAllByPostIdIn(allPosts);
@@ -52,6 +58,7 @@ public class PostServiceImpl extends CommonController implements PostService {
     }
 
     @Override
+    @CachePut(cacheNames = "SinglePost", key = "#result.id")
     public Post updatePost(Post post) {
         Post postDB = postRepository.findById(post.getId()).orElseThrow();
         postDB.setContent(post.getContent());

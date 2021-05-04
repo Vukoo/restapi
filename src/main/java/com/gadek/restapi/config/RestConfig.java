@@ -1,6 +1,7 @@
 package com.gadek.restapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,7 @@ import static java.util.Collections.singletonList;
 
 @Configuration
 @EnableSwagger2
+@EnableCaching
 public class RestConfig {
 
     @Bean
