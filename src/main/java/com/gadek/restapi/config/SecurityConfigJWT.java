@@ -1,43 +1,36 @@
 package com.gadek.restapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import javax.sql.DataSource;
 
-
 @Configuration
 @EnableWebSecurity
 @ConditionalOnProperty(value="spring.security.type",
-        havingValue = "http")
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+        havingValue = "jwt")
+public class SecurityConfigJWT extends SecurityConfig {
 
-    protected final RestAuthenticationFailureHandler authenticationFailureHandler;
-    protected final RestAuthenticationSuccessHandler authenticationSuccessHandler;
-    protected final ObjectMapper objectMapper;
-    protected final DataSource dataSource;
+   private final String secret;
 
-    public SecurityConfig(RestAuthenticationSuccessHandler authenticationSuccessHandler,
-                          RestAuthenticationFailureHandler authenticationFailureHandler, ObjectMapper objectMapper, DataSource dataSource) {
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
-        this.authenticationFailureHandler = authenticationFailureHandler;
-        this.objectMapper = objectMapper;
-        this.dataSource = dataSource;
+    public SecurityConfigJWT(RestAuthenticationSuccessHandler authenticationSuccessHandler,
+                             RestAuthenticationFailureHandler authenticationFailureHandler, ObjectMapper objectMapper, DataSource dataSource,
+                             @Value("${spring.security.token.secret}") String secret) {
+        super(authenticationSuccessHandler,authenticationFailureHandler,objectMapper,dataSource);
+        this.secret = secret;
     }
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
@@ -56,16 +49,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
-                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/web jars/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(authenticationFilter())
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsManager(), secret))
                 .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .and()
+                .headers().frameOptions().disable();
+    }
+
+    @Bean
+    public UserDetailsManager userDetailsManager(){
+        return new JdbcUserDetailsManager(dataSource);
     }
 
     @Bean
@@ -73,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter filter = new CustomAuthenticationFilter(objectMapper);
         filter.setAuthenticationSuccessHandler(authenticationSuccessHandler); // 1
         filter.setAuthenticationFailureHandler(authenticationFailureHandler); // 2
-        filter.setAuthenticationManager(super.authenticationManager()); // 3
+        filter.setAuthenticationManager(authenticationManager()); // 3
         return filter;
     }
 }

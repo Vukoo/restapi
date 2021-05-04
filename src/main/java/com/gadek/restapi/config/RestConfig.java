@@ -3,25 +3,52 @@ package com.gadek.restapi.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Arrays;
+import java.util.List;
+import static java.util.Collections.singletonList;
+
 
 @Configuration
 @EnableSwagger2
 public class RestConfig {
 
-    private final ObjectMapper objectMapper;
-
-    public RestConfig(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
     @Bean
-    public Docket swaggerApi(){
-        return new Docket(DocumentationType.SWAGGER_2)
+    public Docket swaggerApi() {
+        return new Docket(DocumentationType. SWAGGER_2 )
+//                .ignoredParameterTypes(UsernamePasswordAuthenticationToken.class)
                 .select()
-                .paths(PathSelectors.regex ( "^(?!/(error).*$).*$" ))
+                .paths(PathSelectors. regex ( "^(?!/(error).*$).*$" ))
+//                .securitySchemes(singletonList(createSchema()))
+//                .securityContexts(singletonList(createContext()))
+//                .select()
+//                .apis(RequestHandlerSelectors.any())
                 .build();
     }
+
+//    private SecurityContext createContext() {
+//        return SecurityContext.builder().securityReferences(createRef()).build();
+//    }
+//
+//    private List<SecurityReference> createRef() {
+//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+//        authorizationScopes[0] = authorizationScope;
+//        return singletonList(new SecurityReference("JWT", authorizationScopes));
+//    }
+//
+//    private SecurityScheme createSchema() {
+//        return new ApiKey("JWT", "Authorization", "header");
+//    }
 }
