@@ -27,28 +27,26 @@ public class RestConfig {
     @Bean
     public Docket swaggerApi() {
         return new Docket(DocumentationType. SWAGGER_2 )
-//                .ignoredParameterTypes(UsernamePasswordAuthenticationToken.class)
+                .ignoredParameterTypes(UsernamePasswordAuthenticationToken.class)
                 .select()
                 .paths(PathSelectors. regex ( "^(?!/(error).*$).*$" ))
-//                .securitySchemes(singletonList(createSchema()))
-//                .securityContexts(singletonList(createContext()))
-//                .select()
-//                .apis(RequestHandlerSelectors.any())
-                .build();
+                .build()
+                .securitySchemes(singletonList(createSchema()))
+                .securityContexts(singletonList(createContext()));
     }
 
-//    private SecurityContext createContext() {
-//        return SecurityContext.builder().securityReferences(createRef()).build();
-//    }
-//
-//    private List<SecurityReference> createRef() {
-//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-//        authorizationScopes[0] = authorizationScope;
-//        return singletonList(new SecurityReference("JWT", authorizationScopes));
-//    }
-//
-//    private SecurityScheme createSchema() {
-//        return new ApiKey("JWT", "Authorization", "header");
-//    }
+    private SecurityContext createContext() {
+        return SecurityContext.builder().securityReferences(createRef()).build();
+    }
+
+    private List<SecurityReference> createRef() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return singletonList(new SecurityReference("JWT", authorizationScopes));
+    }
+
+    private SecurityScheme createSchema() {
+        return new ApiKey("JWT", "Authorization", "header");
+    }
 }

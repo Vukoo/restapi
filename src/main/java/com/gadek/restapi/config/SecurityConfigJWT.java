@@ -48,6 +48,7 @@ public class SecurityConfigJWT extends SecurityConfig {
         http
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/").permitAll()
+                .antMatchers("/swagger-ui/*").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
                 .antMatchers("/web jars/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
