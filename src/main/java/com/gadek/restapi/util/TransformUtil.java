@@ -16,7 +16,7 @@ public class TransformUtil {
                 .id(post.getId())
                 .title(post.getTitle())
                 .created(post.getCreated())
-                .commentDTOList(commentsToCommentDTO(post.getComment()))
+                .commentDTOList(post.getComment() != null ? commentsToCommentDTO(post.getComment()) : null)
                 .build();
     }
 
