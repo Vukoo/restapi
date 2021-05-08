@@ -42,11 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.jdbcAuthentication()
-                .withDefaultSchema()
-                .dataSource(dataSource)
-                .withUser("user")
-                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("user"))
-                .roles("USER");
+//                .withDefaultSchema()
+                .dataSource(dataSource);
+//                .withUser("user")
+//                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("user"))
+//                .roles("USER");
     }
 
     @Override
@@ -56,6 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/").permitAll()
                 .antMatchers("/swagger-ui/*").permitAll()
+                .antMatchers("/swagger-ui.html/**").permitAll()
+                .antMatchers("/configuration/**").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()

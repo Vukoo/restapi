@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,8 +26,7 @@ import javax.sql.DataSource;
 public class SecurityConfigJWT extends SecurityConfig {
 
    private final String secret;
-
-    public SecurityConfigJWT(RestAuthenticationSuccessHandler authenticationSuccessHandler,
+   public SecurityConfigJWT(RestAuthenticationSuccessHandler authenticationSuccessHandler,
                              RestAuthenticationFailureHandler authenticationFailureHandler, ObjectMapper objectMapper, DataSource dataSource,
                              @Value("${spring.security.token.secret}") String secret) {
         super(authenticationSuccessHandler,authenticationFailureHandler,objectMapper,dataSource);
@@ -35,11 +35,11 @@ public class SecurityConfigJWT extends SecurityConfig {
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.jdbcAuthentication()
-                .withDefaultSchema()
-                .dataSource(dataSource)
-                .withUser("user")
-                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("user"))
-                .roles("USER");
+//                .withDefaultSchema()
+                .dataSource(dataSource);
+//                .withUser("userTest")
+//                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("user"))
+//                .roles("USER");
     }
 
     @Override
@@ -47,12 +47,11 @@ public class SecurityConfigJWT extends SecurityConfig {
         http.csrf().disable(); // 1
         http
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/").permitAll()
                 .antMatchers("/swagger-ui/*").permitAll()
+                .antMatchers("/configuration/**").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
-                .antMatchers("/web jars/**").permitAll()
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+//                .antMatchers("/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -63,6 +62,12 @@ public class SecurityConfigJWT extends SecurityConfig {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()
                 .headers().frameOptions().disable();
+    }
+
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/swagger-resources/**");
     }
 
     @Bean
