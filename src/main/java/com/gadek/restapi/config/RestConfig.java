@@ -31,6 +31,8 @@ public class RestConfig {
         return new Docket(DocumentationType. SWAGGER_2 )
                 .ignoredParameterTypes(UsernamePasswordAuthenticationToken.class)
                 .select()
+//                .apis(RequestHandlerSelectors
+//                        .basePackage("com.gadek.restapi.controller"))
                 .paths(PathSelectors. regex ( "^(?!/(error).*$).*$" ))
                 .build()
                 .securitySchemes(singletonList(createSchema()))

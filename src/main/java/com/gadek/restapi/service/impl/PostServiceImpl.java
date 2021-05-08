@@ -1,5 +1,6 @@
 package com.gadek.restapi.service.impl;
 
+import com.gadek.restapi.exception.NotFoundException;
 import com.gadek.restapi.model.Comment;
 import com.gadek.restapi.model.Post;
 import com.gadek.restapi.repository.CommentRepository;
@@ -33,8 +34,9 @@ public class PostServiceImpl extends CommonController implements PostService {
 
     @Override
     @Cacheable("SinglePost")
-    public Post findById(Long postId) {
-        return postRepository.findById(postId).orElseThrow();
+    public Post findById(Long postId)
+    {
+        return postRepository.findById(postId).orElseThrow(() -> new NotFoundException(postId));
     }
 
     @Override

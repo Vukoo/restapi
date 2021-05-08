@@ -1,7 +1,10 @@
 package com.gadek.restapi.controller;
 
 import com.gadek.restapi.dto.PostDTO;
+import com.gadek.restapi.exception.NotFoundException;
 import com.gadek.restapi.model.Post;
+import com.gadek.restapi.response.ApiResponse;
+import com.gadek.restapi.service.CommonResponse;
 import com.gadek.restapi.service.PostService;
 import com.gadek.restapi.util.TransformUtil;
 import lombok.RequiredArgsConstructor;
@@ -53,9 +56,10 @@ public class PostController {
     }
 
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<String> removePost(@PathVariable long id){
-         postService.removeById(id);
-         return new ResponseEntity<>(HttpStatus.OK);
+    public ApiResponse removePost(@PathVariable long id){
+//         postService.removeById(id);
+//         return new ResponseEntity<>(HttpStatus.OK);
+        return CommonResponse.succResponse();
     }
 
 //    TODO:validate post request

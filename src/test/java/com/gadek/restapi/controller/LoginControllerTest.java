@@ -22,7 +22,7 @@ class LoginControllerTest {
     @Test
     void shouldLogin() throws Exception {
         final MvcResult loginResponse = mockMvc.perform(MockMvcRequestBuilders.post("/login")
-                .content("{\"username\":\"user\", \"password\":\"user\"}"))
+                .content("{\"username\":\"userTest\", \"password\":\"user\"}"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn();
