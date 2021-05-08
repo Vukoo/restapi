@@ -34,9 +34,15 @@ class LoginControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn();
 
+
+    }
+
+    @Test
+    void shouldDeniedAccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/secured"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(401))
                 .andReturn();
+
     }
 }
