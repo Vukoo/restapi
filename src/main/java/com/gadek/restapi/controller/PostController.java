@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,7 @@ public class PostController {
 
 //    TODO:validate post request
     @PostMapping("/posts")
-    public PostDTO addPost(@RequestBody Post post){
+    public PostDTO addPost(@RequestBody @Valid Post post){
          Post postSaved = postService.save(post);
         return TransformUtil.postToPostDTO(postSaved);
     }
