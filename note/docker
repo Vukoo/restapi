@@ -1,2 +1,26 @@
-docker build -f Dockerfile -t restapi
-docker run  -p 8080:8080 restapi
+docker build -f Dockerfile -t rest-api .
+docker run  -p 8080:8080 rest-api
+
+
+--MYSQL
+docker run --name mysql-standalone -e MYSQL_ROOT_PASSWORD=ocs*360 -e MYSQL_ROOT_PASSWORD=ocs*360 e- MYSQL_DATABASE=testdb -e MYSQL_USER=sa -e MYSQL_PASSWORD=ocs*360 -d mysql:5.7
+
+docker container ls => List the active containers
+docker container stop <container-name> => Stops the container
+docker container rm <container-name> => Remove the stopped container
+
+docker run --name mysql-standalone -e MYSQL_ROOT_PASSWORD=ocs*360 -e MYSQL_DATABASE=testdb -e MYSQL_USER=sa -e MYSQL_PASSWORD=ocs*360
+ -d mysql:5.7
+
+
+
+docker container run --name mysql-standalone --network mysqlnet -e MYSQL_URL=jdbc:mysql://mysqldb/testdb -e MYSQL_ROOT_PASSWORD=ocs*360 -e MYSQL_ROOT_PASSWORD=ocs*360 e
+- MYSQL_DATABASE=testdb -e MYSQL_USER=sa -e MYSQL_PASSWORD=ocs*360 -d mysql:5.7
+
+
+docker run --network mysql-container --name rest-api-container -p 8080:8080 rest-api
+
+official mysql:
+	docker run -it --rm -d -v mysql_data:/var/lib/mysql -v mysql_config:/etc/mysql/conf.d --network mysqlnet --name mysqlserver -e MYSQL_USER=sa -e MYSQL_PASSWORD=ocs*360 -e MYSQL_ROOT_PASSWORD=ocs*360 -e MYSQL_DATABASE=testdb -p 3306:3306 mysql:5.7
+
+>docker run -d -p 8080 --name rest-api --network mysqlnet -e MYSQL_URL=jdbc:mysql://mysqlserver/testdb -p 8080:8080 rest-api

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +15,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @JsonProperty( required = true)
+    @NotBlank(message = "Title may not be blank")
     private String title;
     @JsonProperty( required = true)
+    @NotBlank(message = "Content may not be blank")
     private String content;
     private LocalDateTime created;
     @OneToMany(cascade = CascadeType.REMOVE)
