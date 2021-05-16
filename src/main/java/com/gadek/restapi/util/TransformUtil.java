@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 public class TransformUtil {
 
+
+
     public static PostDTO postToPostDTO(Post post){
         return PostDTO.builder()
                 .content(post.getContent())

@@ -33,7 +33,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/comments")
-    public List<PostDTO> getPostWithComments(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
+    public List<PostDTO> getPostWithComments(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection) {
         final List<Post> allPostWithComments = postService.findAllPostWithComments(page, sortDirection != null ? sortDirection : Sort.Direction.ASC);
         return TransformUtil.postsToPostsDTO(allPostWithComments);
     }
