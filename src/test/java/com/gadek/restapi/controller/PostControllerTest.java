@@ -1,6 +1,5 @@
 package com.gadek.restapi.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gadek.restapi.dto.PostDTO;
 import com.gadek.restapi.model.Comment;
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +43,7 @@ class PostControllerTest {
 //        given
         Post newPost = createPost();
 //        when
-        final MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + newPost.getId()))
+        final MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + newPost.getPostId()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn();
@@ -54,7 +52,7 @@ class PostControllerTest {
         final String contentAsString = mvcResult.getResponse().getContentAsString();
         final Post post = objectMapper.readValue(contentAsString, Post.class);
         assertThat(post).isNotNull();
-        assertThat(post.getId()).isEqualTo(newPost.getId());
+        assertThat(post.getPostId()).isEqualTo(newPost.getPostId());
     }
 
     private Post createPost() {
@@ -77,7 +75,7 @@ class PostControllerTest {
         newPost.setComment(newCommentList);
         commentRepository.saveAll(newCommentList);
         //        when
-        final MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + newPost.getId() ))
+        final MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + newPost.getPostId() ))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn();
@@ -86,7 +84,7 @@ class PostControllerTest {
         final PostDTO post = objectMapper.readValue(contentAsString, PostDTO.class);
         //        then
         assertThat(post).isNotNull();
-        assertThat(post.getId()).isEqualTo(newPost.getId());
+        assertThat(post.getId()).isEqualTo(newPost.getPostId());
         assertThat(post.getCommentDTOList()).isNotNull();
         assertThat(post.getCommentDTOList().size()).isEqualTo(newCommentList.size());
         assertThat(post.getCommentDTOList().get(0).getContent()).isEqualTo(comment1.getContent());
@@ -99,5 +97,24 @@ class PostControllerTest {
         comment.setCreated(LocalDateTime.now());
         comment.setPostId(post);
         return comment;
+    }
+
+    @Test
+    @Transactional
+    void addComment() {
+//        give
+        Post post = new Post();
+        post.setContent("New Post");
+        post.setTitle(" new Title");
+        post.setCreated(LocalDateTime.now());
+        postRepository.save(post);
+
+//        when
+        Comment comment = new Comment();
+        comment.setPostId(post);
+        comment.setContent("content for new post");
+        comment.setCreated(LocalDateTime.now());
+//        then
+
     }
 }

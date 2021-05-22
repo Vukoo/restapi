@@ -7,9 +7,10 @@ import java.time.LocalDateTime;
 
 @Setter
 @Builder
-public class PostResponse extends ApiResponse {
+public class PostResponse  {
     private long id;
     private String title;
     private String content;
     private LocalDateTime created;
+    private ApiResponse  apiResponse;
 }

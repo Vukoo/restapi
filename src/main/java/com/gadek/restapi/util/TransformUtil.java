@@ -15,19 +15,19 @@ public class TransformUtil {
     public static PostDTO postToPostDTO(Post post){
         return PostDTO.builder()
                 .content(post.getContent())
-                .id(post.getId())
+                .id(post.getPostId())
                 .title(post.getTitle())
                 .created(post.getCreated())
-                .commentDTOList(post.getComment() != null ? commentsToCommentDTO(post.getComment()) : null)
+                .commentDTOList(post.getComment() != null && post.getComment().size() > 0 ? commentsToCommentDTO(post.getComment()) : null)
                 .build();
     }
 
     public static CommentDTO commentToCommentDTO(Comment comment){
         return CommentDTO.builder()
                 .content(comment.getContent())
-                .id(comment.getId())
+                .id(comment.getCommentId())
                 .created(comment.getCreated())
-                .postId(comment.getPostId().getId())
+                .postId(comment.getPostId().getPostId())
                 .build();
     }
 

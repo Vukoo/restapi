@@ -1,18 +1,21 @@
 package com.gadek.restapi.controller;
 
+import com.gadek.restapi.dto.CommentDTO;
 import com.gadek.restapi.dto.PostDTO;
+import com.gadek.restapi.model.Comment;
 import com.gadek.restapi.model.Post;
 import com.gadek.restapi.response.ApiResponse;
-import com.gadek.restapi.service.CommonResponse;
+import com.gadek.restapi.response.BaseResponse;
+import com.gadek.restapi.service.CommentService;
 import com.gadek.restapi.service.PostService;
 import com.gadek.restapi.util.TransformUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //TODO: custom response with error handling
 @RestController
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping("/")
     public String index(){
@@ -27,6 +31,7 @@ public class PostController {
     }
 
     @GetMapping("/posts")
+    @ResponseStatus(HttpStatus.OK)
     public List<PostDTO> getPosts(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
         final List<Post> allPost = postService.findAllPost(page, sortDirection != null ? sortDirection : Sort.Direction.ASC);
         return TransformUtil.postsToPostsDTO(allPost);
@@ -45,6 +50,16 @@ public class PostController {
         return TransformUtil.postToPostDTO(post);
     }
 
+    @PostMapping("/posts/{id}/comment")
+    public CommentDTO addComment(@PathVariable long id, @RequestBody Comment comment){
+        Post post = postService.findById(id);
+        comment.setPostId(post);
+        Comment commentDB = commentService.save(comment);
+        CommentDTO commentDTO = TransformUtil.commentToCommentDTO(commentDB);
+//        commentDTO.setApiResponse(BaseResponse.succResponse());
+        return commentDTO;
+    }
+
     @PutMapping("/posts")
     public PostDTO updatePost(@RequestBody Post post){
         final Post postUpdated = postService.updatePost(post);
@@ -52,13 +67,15 @@ public class PostController {
     }
 
     @DeleteMapping("/posts/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ApiResponse removePost(@PathVariable long id){
          postService.removeById(id);
-        return CommonResponse.succResponse();
+        return BaseResponse.succResponse();
     }
 
 //    TODO:validate post request
     @PostMapping("/posts")
+    @ResponseStatus(HttpStatus.CREATED)
     public PostDTO addPost(@RequestBody @Valid Post post){
          Post postSaved = postService.save(post);
         return TransformUtil.postToPostDTO(postSaved);

@@ -1,5 +1,6 @@
 package com.gadek.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long postId;
     @JsonProperty( required = true)
     @NotBlank(message = "Title may not be blank")
     private String title;
@@ -21,7 +22,8 @@ public class Post {
     @NotBlank(message = "Content may not be blank")
     private String content;
     private LocalDateTime created;
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    @OneToMany
     @JoinColumn(name = "postId", updatable = false, insertable = false)
     private List<Comment> comment;
 

@@ -6,20 +6,23 @@ import com.sun.istack.NotNull;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
 @Entity
 @Data
-public class Comment {
+public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId", nullable=false)
-    private Post postId;
+    private long commentId;
     @JsonProperty( required = true)
     private String content;
+    @JsonIgnore
     private LocalDateTime created;
+
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)//(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "postId", insertable = true, updatable = true)
+    private Post postId;
 }

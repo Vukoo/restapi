@@ -29,6 +29,7 @@ public class PostServiceImpl extends CommonController implements PostService {
 
     @Override
     public List<Post> findAll() {
+
         return (List<Post>) postRepository.findAll();
     }
 
@@ -51,7 +52,7 @@ public class PostServiceImpl extends CommonController implements PostService {
     }
 
     @Override
-    @Cacheable("PostWithComments")
+    @Cacheable(cacheNames = "PostsWithComments")
     public List<Post> findAllPostWithComments(int page, Sort.Direction sortDirection) {
         final List<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection,"id")));
         final List<Comment> commentsList = commentRepository.findAllByPostIdIn(allPosts);
@@ -62,7 +63,7 @@ public class PostServiceImpl extends CommonController implements PostService {
     @Override
     @CachePut(cacheNames = "SinglePost", key = "#result.id")
     public Post updatePost(Post post) {
-        Post postDB = postRepository.findById(post.getId()).orElseThrow();
+        Post postDB = postRepository.findById(post.getPostId()).orElseThrow();
         postDB.setContent(post.getContent());
         postDB.setTitle(post.getTitle());
         return postDB;
