@@ -14,6 +14,7 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="post_id")
     private long postId;
     @JsonProperty( required = true)
     @NotBlank(message = "Title may not be blank")

@@ -15,6 +15,7 @@
 	<description>REST API project for Spring Boot</description>
 	<properties>
 		<java.version>16</java.version>
+		<docker.image.prefix>rest-api</docker.image.prefix>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -123,7 +124,20 @@
 					<target>14</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.12</version>
+				<configuration>
+					<repository>${docker.image.prefix}/${project.artifactId}</repository>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+			</plugin>
         </plugins>
+
+
 	</build>
 
 </project>
