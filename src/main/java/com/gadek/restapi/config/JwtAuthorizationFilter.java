@@ -2,6 +2,8 @@ package com.gadek.restapi.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gadek.restapi.response.ApiResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,10 +38,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken authentication = getAuthentication(request); // 1
         if (authentication == null) {
             filterChain.doFilter(request, response);
+
             return;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication); // 2
         filterChain.doFilter(request, response);
+    }
+    private byte[] restResponseBytes(ApiResponse eErrorResponse) throws IOException {
+        String serialized = new ObjectMapper().writeValueAsString(eErrorResponse);
+        return serialized.getBytes();
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {

@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.sql.DataSource;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @ConditionalOnProperty(value="spring.security.type",
         havingValue = "jwt")
 public class SecurityConfigJWT extends SecurityConfig {

@@ -32,7 +32,6 @@ public class NotFoundAdvice extends ResponseEntityExceptionHandler {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, "Provide correct ID", ex);
     }
 
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {

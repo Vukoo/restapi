@@ -14,5 +14,5 @@ import java.util.List;
 public interface PostRepository extends PagingAndSortingRepository<Post,Long> {
 
     @Query("Select p FROM Post p")
-    List<Post> findAllPosts(Pageable page);
+    Page<Post> findAllPosts(Pageable page);
 }

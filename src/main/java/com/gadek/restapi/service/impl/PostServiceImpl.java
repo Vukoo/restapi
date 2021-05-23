@@ -1,15 +1,21 @@
 package com.gadek.restapi.service.impl;
 
+import com.gadek.restapi.dto.PostDTO;
 import com.gadek.restapi.exception.NotFoundException;
 import com.gadek.restapi.model.Comment;
 import com.gadek.restapi.model.Post;
 import com.gadek.restapi.repository.CommentRepository;
 import com.gadek.restapi.repository.PostRepository;
+import com.gadek.restapi.response.BaseResponse;
+import com.gadek.restapi.response.CommentResponse;
+import com.gadek.restapi.response.PostsResponse;
 import com.gadek.restapi.service.PostService;
+import com.gadek.restapi.util.TransformUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -47,17 +53,20 @@ public class PostServiceImpl extends CommonController implements PostService {
     }
 
     @Override
-    public List<Post> findAllPost(int page, Sort.Direction sortDirection) {
-        return postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection, "id")));
+    public Page<Post> findAllPost(int page, Sort.Direction sortDirection) {
+
+        PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE, Sort.by(sortDirection, "id"));
+        Page<Post> allPosts = postRepository.findAllPosts(pageRequest);
+        return allPosts;
     }
 
     @Override
     @Cacheable(cacheNames = "PostsWithComments")
     public List<Post> findAllPostWithComments(int page, Sort.Direction sortDirection) {
-        final List<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection,"id")));
-        final List<Comment> commentsList = commentRepository.findAllByPostIdIn(allPosts);
+        final Page<Post> allPosts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE,Sort.by(sortDirection,"id")));
+        final List<Comment> commentsList = commentRepository.findAllByPostIdIn(allPosts.getContent());
         allPosts.forEach(post -> post.setComment(extractCommentS(post,commentsList)));
-        return allPosts;
+        return allPosts.getContent();
     }
 
     @Override

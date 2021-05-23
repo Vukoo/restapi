@@ -6,10 +6,12 @@ import com.gadek.restapi.model.Comment;
 import com.gadek.restapi.model.Post;
 import com.gadek.restapi.response.ApiResponse;
 import com.gadek.restapi.response.BaseResponse;
+import com.gadek.restapi.response.PostsResponse;
 import com.gadek.restapi.service.CommentService;
 import com.gadek.restapi.service.PostService;
 import com.gadek.restapi.util.TransformUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +34,14 @@ public class PostController {
 
     @GetMapping("/posts")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostDTO> getPosts(@RequestParam(required = false, defaultValue = "0") int page,Sort.Direction sortDirection){
-        final List<Post> allPost = postService.findAllPost(page, sortDirection != null ? sortDirection : Sort.Direction.ASC);
-        return TransformUtil.postsToPostsDTO(allPost);
+    public PostsResponse getPosts(@RequestParam(required = false, defaultValue = "0") int page, Sort.Direction sortDirection){
+        final Page<Post> allPosts = postService.findAllPost(page, sortDirection != null ? sortDirection : Sort.Direction.ASC);
+        List<PostDTO> postDTOS = TransformUtil.postsToPostsDTO(allPosts.toList());
+        PostsResponse postsResponse = new PostsResponse();
+        postsResponse.setPostDTOList(postDTOS);
+        postsResponse.setPageDTO(TransformUtil.PAGE_TO_PAGE_DTO.apply(allPosts));
+        BaseResponse.succResponse(postsResponse);
+        return postsResponse;
     }
 
     @GetMapping("/posts/comments")

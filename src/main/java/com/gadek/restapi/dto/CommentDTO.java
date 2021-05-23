@@ -22,6 +22,5 @@ public class CommentDTO {
     private Long postId;
     private String content;
     private LocalDateTime created;
-//    private ApiResponse apiResponse;
 }
 
