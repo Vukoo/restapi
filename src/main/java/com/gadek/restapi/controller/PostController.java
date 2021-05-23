@@ -14,6 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -62,9 +66,8 @@ public class PostController {
         Post post = postService.findById(id);
         comment.setPostId(post);
         Comment commentDB = commentService.save(comment);
-        CommentDTO commentDTO = TransformUtil.commentToCommentDTO(commentDB);
 //        commentDTO.setApiResponse(BaseResponse.succResponse());
-        return commentDTO;
+        return TransformUtil.commentToCommentDTO(commentDB);
     }
 
     @PutMapping("/posts")
@@ -74,10 +77,14 @@ public class PostController {
     }
 
     @DeleteMapping("/posts/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public ApiResponse removePost(@PathVariable long id){
-         postService.removeById(id);
-        return BaseResponse.succResponse();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            postService.removeById(id);
+            return BaseResponse.succResponse();
+        } else {
+            throw new AccessDeniedException("Unable to remove resource, access denied!");
+        }
     }
 
 //    TODO:validate post request

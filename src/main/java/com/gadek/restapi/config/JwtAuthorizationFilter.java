@@ -44,10 +44,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication); // 2
         filterChain.doFilter(request, response);
     }
-    private byte[] restResponseBytes(ApiResponse eErrorResponse) throws IOException {
-        String serialized = new ObjectMapper().writeValueAsString(eErrorResponse);
-        return serialized.getBytes();
-    }
+
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(TOKEN_HEADER); // 3
